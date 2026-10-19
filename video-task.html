@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>视频标注 · 摆放物品</title>
+  <link rel="stylesheet" href="./video-task.css">
+</head>
+<body>
+  <div class="video-workbench">
+    <header class="topbar">
+      <button class="icon-button exit" aria-label="返回" title="返回" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H21v14H10M13 12H3m0 0 5-5m-5 5 5 5"/></svg>
+      </button>
+      <div class="task-title">将采集设备放到指定位置</div>
+      <div class="top-actions">
+        <button class="icon-button" aria-label="统计" title="统计" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10h3v10M10.5 20V4h3v16M17 20v-7h3v7"/></svg></button>
+        <button class="icon-button" aria-label="快捷键" title="快捷键" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M5 9h2m2 0h2m2 0h2m2 0h2M5 12h2m2 0h2m2 0h2m2 0h2M7 16h10"/></svg></button>
+        <button class="top-button submit" type="button">提交</button>
+        <button class="top-button save" type="button">保存</button>
+        <button class="top-button quality" type="button">数据有效</button>
+        <button class="icon-button fullscreen" aria-label="全屏" title="全屏" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5m6 0h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+      </div>
+    </header>
+    <div class="work-area">
+      <main class="left-workspace">
+        <div class="video-stage">
+          <span class="camera-badge">camera2</span>
+          <div class="source-frame" aria-label="示例视频画面：点击物品三维框查看位置与朝向">
+            <img src="./video-source.png" alt="现有视频标注工作台的摆放物品画面" draggable="false">
+            <div id="videoObjectBoxes" class="video-object-boxes"></div>
+          </div>
+        </div>
+        <div class="player-controls">
+          <button class="play-button" id="playButton" type="button" aria-label="播放">▶</button>
+          <span id="timeReadout">00:00:02:12 / 00:00:24:55</span>
+        </div>
+        <div class="timeline" aria-label="视频标注时间轴">
+          <div class="ruler-row"><div class="track-label"></div><div class="ruler"><span>00:00</span><span>00:05</span><span>00:10</span><span>00:15</span><span>00:20</span><div class="tick-grid"></div><div class="playhead ruler-head"></div></div></div>
+          <div class="track-row"><div class="track-label">Task</div><div class="track-content"><div class="segment task-segment" style="left:0;width:100%">摆放物品</div><div class="playhead"></div></div></div>
+          <div class="track-row"><div class="track-label">右手</div><div class="track-content"><div class="segment grip" style="left:0;width:3%">抓取</div><div class="segment seek" style="left:3%;width:69%">寻找</div><div class="segment carry" style="left:72%;width:14%">持握运输</div><div class="segment press" style="left:86%;width:14%">按按钮</div><div class="playhead"></div></div></div>
+          <div class="track-row"><div class="track-label">左手</div><div class="track-content"><div class="segment arrange" style="left:0;width:7%">整理</div><div class="segment seek" style="left:7%;width:65%">寻找</div><div class="segment retract" style="left:72%;width:14%">手收回</div><div class="segment place" style="left:86%;width:14%">放到</div><div class="playhead"></div></div></div>
+          <input class="timeline-scrub" id="timelineScrub" type="range" min="0" max="1495" value="132" aria-label="选择视频时间">
+        </div>
+      </main>
+      <aside class="right-sidebar" aria-label="标注结果">
+        <nav class="sidebar-tabs" aria-label="侧栏标签">
+          <button class="active" type="button">结果</button>
+          <button type="button">批注</button>
+          <button type="button">场景</button>
+        </nav>
+        <div class="sidebar-scroll">
+          <button id="taskToggle" class="group-heading task-toggle" type="button" aria-expanded="true"><span class="caret">▾</span>摆放物品</button>
+          <section id="poseOutsideTask" class="pose-section outside-task-pose" aria-label="未归属任务画面的物品三维位置与朝向" hidden></section>
+          <div class="result-outline" id="taskContent">
+            <section class="task-block">
+              <div class="range-summary"><span>Task 时间段：00:00:00:00 - 00:00:24:54&nbsp; 是；</span><span class="row-tools"><button type="button" aria-label="播放任务片段" class="mini-play">▶</button><button type="button" aria-label="删除任务片段" class="trash"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7m4-7v7"/></svg></button></span></div>
+              <div class="time-range">时间范围：00:00:00:00-00:00:24:54&nbsp; （1-1495）</div>
+              <label class="select-row"><span>Task:</span><select aria-label="Task"><option selected>摆放物品</option><option>清理桌面</option><option>摆放椅子</option><option>将采集设备放到指定位置</option></select></label>
+              <fieldset class="choice-field"><legend>是否为高质量</legend><label><input type="radio" name="task-quality" value="yes" checked> 是</label><label><input type="radio" name="task-quality" value="no"> 否</label></fieldset>
+            </section>
+            <section id="poseWithinTask" class="pose-section" aria-label="物品三维位置与朝向"></section>
+            <div class="hand-title">右手</div>
+            <div id="rightHandActions"></div>
+            <div class="hand-title left-hand-title">左手</div>
+            <div id="leftHandActions"></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+  <div id="unsavedDialog" class="dialog-backdrop" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="unsavedTitle">
+      <h2 id="unsavedTitle">当前画面的坐标尚未保存</h2>
+      <p>切换时间后，未保存的修改需要先处理。</p>
+      <div class="dialog-actions"><button type="button" data-unsaved="cancel">取消切换</button><button type="button" data-unsaved="discard">放弃修改</button><button type="button" data-unsaved="save">保存并切换</button></div>
+    </div>
+  </div>
+  <div id="videoToast" class="video-toast" role="status" aria-live="polite" hidden></div>
+  <script src="./video-task.js"></script>
+</body>
+</html>

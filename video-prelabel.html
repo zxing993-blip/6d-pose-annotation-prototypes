@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>视频项目 · 预标注配置原型</title>
+  <style>
+    :root{--blue:#1765f5;--blue-lite:#eaf1ff;--text:#303744;--sub:#788396;--line:#e5e9f0;--bg:#f7f9fc;--red:#f04b50;--green:#2dbb77;--orange:#edaa27}
+    *{box-sizing:border-box}body{margin:0;color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:white}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.46}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #8ab3ff;outline-offset:2px}
+    .app{display:flex;min-height:100vh}.rail{width:60px;flex:none;border-right:1px solid var(--line);background:#fff;display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px 0}.rail button{width:46px;height:46px;border:0;background:transparent;color:#818a9a;border-radius:3px;display:grid;place-items:center}.rail button.active{color:var(--blue);background:#edf3ff;border-left:3px solid var(--blue);border-radius:0}.rail svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.rail .avatar{margin-top:auto;background:#dce8ff;color:var(--blue);border-radius:50%;width:31px;height:31px;font-size:12px}
+    .main{min-width:0;flex:1}.head{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;font-size:18px;font-weight:600}.review{background:#f2f6ff;border-bottom:1px solid #dbe6fb;padding:9px 22px}.review-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.review strong{font-size:13px;color:#375785}.review select{height:32px;min-width:230px;border:1px solid #bfd1ef;border-radius:4px;background:white;padding:0 9px;color:#354154}.review .hint{color:#657b9e;font-size:12px;margin-left:auto}.review-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.state-chip{border:1px solid #d6e1f3;background:white;color:#567092;padding:4px 8px;border-radius:3px;font-size:12px}.state-chip.active{border-color:var(--blue);background:var(--blue-lite);color:var(--blue)}.wrap{padding:20px 23px 32px}.tabs{display:flex;gap:0;margin-bottom:20px}.tabs button{border:1px solid #e3e8f2;background:white;color:#7b8495;padding:6px 17px;min-height:36px;margin-right:-1px}.tabs button:first-child{border-radius:4px 0 0 4px}.tabs button:last-child{border-radius:0 4px 4px 0}.tabs button.active{border-color:var(--blue);background:#eef3ff;color:var(--blue);z-index:1}.tabs.secondary{margin-bottom:22px}.tabs.secondary button{min-width:88px}
+    .cap-tabs{display:flex;align-items:center;gap:0;margin-bottom:16px;border-bottom:1px solid var(--line)}.cap-tabs button{padding:11px 20px;border:0;border-bottom:2px solid transparent;background:white;color:#738095}.cap-tabs button.active{color:var(--blue);border-color:var(--blue);font-weight:600}.cap-note{margin-left:auto;color:#9ba4b3;font-size:12px}.cols{display:grid;grid-template-columns:1.06fr 1fr;gap:18px;min-height:650px}.panel{border:1px solid var(--line);border-radius:3px;background:white;padding:18px;min-width:0}.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:34px;margin-bottom:12px}.panel-title{color:#667184;font-size:15px;font-weight:600}.muted{color:#9da6b5}.small{font-size:12px}.btn{border:1px solid #d8dfe9;background:#fff;border-radius:4px;color:#536070;min-height:32px;padding:5px 14px}.btn:hover:not(:disabled){border-color:#99baff;color:var(--blue)}.btn.primary{background:var(--blue);border-color:var(--blue);color:white}.btn.primary:hover:not(:disabled){background:#0e58dd;color:white}.btn.link{border:0;color:var(--blue);background:transparent;padding:3px 4px}.btn.danger{color:var(--red);border-color:#ffced1}.btn.mini{font-size:12px;min-height:27px;padding:3px 9px}.field{display:flex;align-items:center;gap:8px}.field label{color:#667184;white-space:nowrap}.field input,.field select{height:34px;border:1px solid #dce2eb;border-radius:3px;padding:0 9px;color:#465266;min-width:0;background:white}.field input[type=checkbox]{height:16px;width:16px}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field-grid .field{align-items:stretch;flex-direction:column;gap:5px}.input-help{color:#9aa4b3;font-size:12px;margin-top:3px}.bar{height:1px;background:var(--line);margin:17px 0}.tag{border:1px solid #b9cfff;background:#f3f7ff;color:#4774c9;border-radius:3px;padding:1px 6px;font-size:12px}.tag.green{border-color:#b8e9d0;background:#f0fbf5;color:#2d9a68}.tag.orange{border-color:#f5dc9b;background:#fff9ec;color:#b17b16}.tag.red{border-color:#ffc6c9;background:#fff3f3;color:#d74d54}
+    .target-title{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:18px 0 7px}.target-title strong{font-size:15px;color:#667184}.target-head,.target-row{display:grid;grid-template-columns:88px 110px minmax(160px,1fr) 52px 52px;gap:7px;align-items:center}.target-head{font-size:12px;color:#929dac;padding:9px 3px}.target-row{padding:7px 3px;border-top:1px solid #eff1f5}.target-row input[type=text]{width:100%;height:32px;border:1px solid #dfe5ed;border-radius:3px;padding:0 7px;color:#4f5a69}.target-row input:disabled{background:#f8f9fb;color:#6c7788}.target-row input[type=checkbox]{width:15px;height:15px}.target-actions{display:flex;align-items:center;justify-content:space-between;margin-top:13px;gap:8px}.target-actions .right-actions{display:flex;gap:8px}.confirm-actions{display:flex;justify-content:flex-end;border-top:1px solid var(--line);padding-top:16px;margin-top:18px}.prompt-preview{background:#f8faff;border:1px solid #e4eaf5;border-radius:3px;padding:10px 12px;color:#657286;font-size:12px;margin-top:16px;white-space:pre-wrap;word-break:break-all}.info-line{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:#788496;font-size:12px}.notice{border:1px solid #f6e0aa;background:#fffaf0;color:#936f24;border-radius:3px;padding:9px 11px;margin:12px 0;font-size:12px}.notice.red{border-color:#ffd5d5;background:#fff7f7;color:#bc4f55}.notice.blue{border-color:#d3e2ff;background:#f5f8ff;color:#5372a7}.notice.green{border-color:#ccebdc;background:#f3fcf7;color:#318760}.prompt-fields{margin:14px 0}.prompt-fields label{font-size:12px;color:#758194;display:block;margin-bottom:5px}.prompt-fields textarea{width:100%;min-height:100px;resize:vertical;border:1px solid #dfe5ed;border-radius:3px;padding:8px;color:#445166}.step-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.ios-switch{position:relative;display:inline-block;width:42px;height:24px;flex:none;cursor:pointer}.ios-switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}.ios-switch .slider{position:absolute;inset:0;background:#cbd2dc;border-radius:99px;transition:background .18s;pointer-events:none}.ios-switch .slider:before{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:transform .18s}.ios-switch input:checked+.slider{background:var(--blue)}.ios-switch input:checked+.slider:before{transform:translateX(18px)}.ios-switch input:focus-visible+.slider{outline:2px solid #8ab3ff;outline-offset:2px}.task-fields{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.task-fields label{font-size:12px;color:#7f8da1}.task-fields input,.task-fields select{width:100%;height:32px;margin-top:4px;border:1px solid #dce2eb;border-radius:3px;padding:0 6px}.task-actions{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.review-diff{width:100%;border-collapse:collapse;font-size:12px}.review-diff td,.review-diff th{border-bottom:1px solid var(--line);padding:7px;text-align:left}.review-diff th{background:#f8fafc}
+    .right-block{border-top:1px solid var(--line);padding-top:18px;margin-top:16px}.right-block.first{border-top:0;padding-top:0;margin-top:0}.right-label{font-size:14px;color:#758194;margin:0 0 6px}.status-title{font-size:14px;color:#667284;margin-bottom:5px}.status-line{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:29px}.status-main{font-size:14px}.run-card{border:1px solid var(--line);border-radius:3px;padding:11px 12px;margin-top:9px;background:#fff}.run-card .title{font-weight:600;margin-bottom:5px}.run-card .meta{font-size:12px;color:#909bab;margin:3px 0}.run-card .actions{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}.progress{height:7px;background:#edf2fa;border-radius:5px;overflow:hidden;margin:10px 0}.progress>span{display:block;height:100%;background:var(--blue)}.result-table{border-collapse:collapse;width:100%;font-size:12px;margin-top:10px}.result-table th,.result-table td{border-bottom:1px solid #edf0f4;text-align:left;padding:7px 5px;color:#687486}.result-table th{background:#f8fafc;color:#8a96a6}.empty{color:#a7b0bd;font-size:13px;padding-top:7px}
+    .editor{border:1px solid #e1e5eb;background:#f8f8f8;min-height:530px;padding:14px 17px;color:#30343b;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.7;white-space:pre-wrap;width:100%;resize:vertical}.editor:disabled{color:#505966}.scheme{border:1px solid var(--line);min-height:510px;padding:18px}.scheme-row{display:flex;gap:10px;align-items:center;padding:9px;color:#9ca5b3}.scheme-row span{background:#f8f9fa;border:1px solid var(--line);border-radius:3px;padding:4px 9px;min-width:150px}.scheme-tabs{display:flex;gap:0;margin-bottom:20px}.scheme-tabs button{border:1px solid var(--line);background:white;padding:5px 16px;color:#8994a2}.scheme-tabs button.active{border-color:var(--blue);background:var(--blue-lite);color:var(--blue)}
+    .mask{position:fixed;inset:0;background:rgba(22,30,45,.46);display:flex;align-items:center;justify-content:center;z-index:30;padding:20px}.modal{width:min(650px,100%);background:white;border-radius:5px;box-shadow:0 10px 34px rgba(0,0,0,.15)}.modal-head{padding:17px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:18px}.modal-head button{border:0;background:none;color:#9ba4b3;font-size:23px}.modal-body{padding:22px 24px;display:grid;gap:16px}.modal-row{display:grid;grid-template-columns:92px 1fr;align-items:start;gap:13px}.modal-row label{color:#6b778a;padding-top:7px}.modal-row label b{color:var(--red)}.modal-row select,.modal-row input{width:100%;min-height:34px;border:1px solid #dce2eb;border-radius:3px;background:white;padding:0 9px}.modal-foot{padding:12px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}.checks{display:flex;flex-wrap:wrap;gap:8px}.check{border:1px solid #d8e1ed;border-radius:3px;padding:6px 9px;color:#617086;cursor:pointer}.check input{margin-right:5px}.check:has(input:checked){border-color:var(--blue);background:#f4f7ff;color:var(--blue)}
+    .preview{position:fixed;inset:0;background:white;z-index:25;display:flex;flex-direction:column}.preview-head{height:57px;flex:none;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 19px}.preview-body{display:grid;grid-template-columns:minmax(0,1fr) 330px;min-height:0;flex:1}.stage-wrap{background:#22262d;display:flex;flex-direction:column;min-width:0}.stage{flex:1;position:relative;display:grid;place-items:center;overflow:hidden}.stage svg{width:min(870px,95%);max-height:100%;height:auto}.watermark{position:absolute;left:18px;top:16px;color:#c2c9d3;font-size:12px;background:#303843;padding:4px 8px;border-radius:3px}.timeline{height:112px;background:#fff;padding:12px 20px;border-top:1px solid var(--line)}.timeline input{width:100%;accent-color:var(--blue)}.time-head{display:flex;justify-content:space-between;color:#697789}.markers{height:16px;position:relative;margin:0 7px}.markers i{position:absolute;top:1px;width:4px;height:13px;background:#e35c59}.preview-side{border-left:1px solid var(--line);padding:18px;overflow:auto}.pose-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.pose-grid div{border:1px solid #e5e9f0;background:#fafbfc;padding:7px}.pose-grid b{display:block;font-size:16px;color:#46536a}.pose-grid small{color:#8b98a9}.frame-row{border-bottom:1px solid var(--line);padding:9px 0;font-size:12px;color:#778598}.footer-note{font-size:12px;color:#99a6b6;margin-top:12px}
+    @media(max-width:900px){.cols{grid-template-columns:1fr}.panel{min-height:400px}.cap-note{display:none}.review .hint{display:none}.target-head,.target-row{grid-template-columns:65px 90px minmax(100px,1fr) 42px 42px}.preview-body{grid-template-columns:1fr}.preview-side{display:none}}
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const states=[
+ ['empty','1 未启用'],['targetEmpty','2 待配置／待确认'],['ready','3 已确认／待验证'],
+ ['verified','4 抽验完成／可分析'],['complete','5 分析完成'],['analysisPartial','6 分析异常']
+];
+const icons={menu:'<path d="M4 5h16M4 12h11M4 19h16M17 9l4 3-4 3"/>',home:'<path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/>',tasks:'<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h6"/>',project:'<path d="M4 4h13v14H4zM8 8h6M8 12h7M9 20h12V7"/>',users:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-2c0-3 2-5 6-5s6 2 6 5v2M17 6a3 3 0 0 1 0 6M17 14c3 0 4 2 4 4v2"/>',chart:'<path d="M4 20V4M4 20h17M8 16v-4M13 16V7M18 16V9"/>'};
+const seedTargets=[{id:'cup',name:'杯子',desc:'白色陶瓷杯，带把手',source:'模型提取',on:true},{id:'bottle',name:'水瓶',desc:'透明塑料水瓶，蓝色瓶盖',source:'模型提取',on:true}];
+let ui={state:'targetEmpty',cap:'pose',top:'配置',section:'预标注',scheme:'Task',targets:[],enabled:true,
+ prompt:'',targetsSaved:false,confirmed:false,confirmedSignature:null,validatedSignature:null,
+ validationStatus:'none',analysisStatus:'none',analysisSignature:null,runningKind:null,
+ version:'v1.0.0',modal:null,removeIndex:null,showStates:true,previewOpen:false,frame:100,
+ selectedTasks:['TASK-1001','TASK-1002'],analysisTasks:[],analysisRiskAccepted:false,camera:'camera1',range:'全部待分析任务',toast:'',vlaEdit:false,
+ taskPose:{tx:'0.324',ty:'0.112',tz:'0.781',rx:'12.4',ry:'-3.2',rz:'88.0'},taskCategory:'cup',taskRemoved:false,
+ missing:false,rerunApplied:false,taskSaved:false,runToken:0,runSignature:null,promptSaved:false,extractError:false};
+const poseFieldLabels={tx:'位置 X',ty:'位置 Y',tz:'位置 Z',rx:'旋转 X',ry:'旋转 Y',rz:'旋转 Z'};
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function svg(name){return `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[name]}</svg>`}
+function configSignature(){return JSON.stringify({prompt:ui.prompt.trim(),model:ui.version,targets:ui.targets.map(t=>({id:t.id.trim(),name:t.name.trim(),desc:t.desc.trim(),on:t.on}))})}
+function isConfirmed(){return ui.enabled&&!!ui.prompt.trim()&&ui.promptSaved&&ui.targetsSaved&&validTargets()&&ui.confirmed&&ui.confirmedSignature===configSignature()}
+function isValidated(){return isConfirmed()&&ui.validationStatus==='success'&&ui.validatedSignature===ui.confirmedSignature}
+function validTargets(){const rows=ui.targets;const ids=rows.map(t=>t.id.trim());return rows.some(t=>t.on)&&rows.every(t=>t.id.trim()&&t.name.trim()&&(!t.on||t.desc.trim()))&&new Set(ids).size===ids.length}
+function analysisRisk(){return !isValidated()?(ui.validationStatus==='failed'?'本次抽验失败，仍可继续批量分析。请确认风险。':ui.validationStatus==='terminated'?'本次抽验已终止，仍可继续批量分析。请确认风险。':'尚未完成当前配置的抽验，仍可直接批量分析。请确认风险。'):''}
+function activeState(){if(!ui.enabled)return 'empty';if(!isConfirmed())return 'targetEmpty';if(['partial','failed','terminated'].includes(ui.analysisStatus)&&ui.analysisSignature===ui.confirmedSignature)return 'analysisPartial';if(ui.analysisStatus==='success'&&ui.analysisSignature===ui.confirmedSignature)return 'complete';if(isValidated())return 'verified';return 'ready'}
+function setState(v){
+ ui.runToken++;ui.state=v;ui.cap='pose';ui.top='配置';ui.section='预标注';ui.modal=null;ui.previewOpen=false;ui.frame=100;ui.extractError=false;ui.promptSaved=false;
+ ui.enabled=v!=='empty';ui.prompt='';ui.targets=[];ui.targetsSaved=false;ui.confirmed=false;ui.confirmedSignature=null;
+ ui.validatedSignature=null;ui.validationStatus='none';ui.analysisStatus='none';ui.analysisSignature=null;ui.runningKind=null;
+ if(!['empty','targetEmpty'].includes(v)){
+  ui.prompt='请找出视频中需要标注三维位置与朝向的杯子和水瓶，并描述可区分的外观特征。';
+  ui.targets=structuredClone(seedTargets).map(t=>({...t,persisted:true}));ui.targetsSaved=true;ui.promptSaved=true;ui.confirmed=true;ui.confirmedSignature=configSignature();
+ }
+ if(['verified','complete','analysisPartial'].includes(v)){ui.validationStatus='success';ui.validatedSignature=ui.confirmedSignature}
+ if(v==='complete'){ui.analysisStatus='success';ui.analysisSignature=ui.confirmedSignature}
+ if(v==='analysisPartial'){ui.analysisStatus='partial';ui.analysisSignature=ui.confirmedSignature}
+ render();
+}
+function btn(label,action,cls='',disabled=false){return `<button class="btn ${cls}" data-action="${action}" ${disabled?'disabled':''}>${label}</button>`}
+function toast(s){ui.toast=s;render();setTimeout(()=>{ui.toast='';render()},2300)}
+function render(){
+ const root=document.getElementById('app'); const currentState=activeState(); const idx=states.findIndex(s=>s[0]===currentState); const isVla=ui.cap==='vla';
+ root.innerHTML=`<div class="app"><aside class="rail" aria-label="主导航">${[['menu','展开菜单'],['home','首页'],['tasks','任务'],['project','项目'],['users','人员'],['chart','统计']].map(([i,l])=>`<button class="${i==='project'?'active':''}" data-action="nav" title="${l}" aria-label="${l}">${svg(i)}</button>`).join('')}<button class="avatar" title="当前用户">xy</button></aside><main class="main"><header class="head">项目Beta / 项目详情</header><div class="review"><div class="review-top"><strong>原型状态预览</strong><select id="stateSelect" aria-label="选择原型状态">${states.map(([k,l])=>`<option value="${k}" ${currentState===k?'selected':''}>${l}</option>`).join('')}</select>${currentState==='analysisPartial'?`<select id="errorVariant" aria-label="切换分析异常示例" style="min-width:135px"><option value="partial" ${ui.analysisStatus==='partial'?'selected':''}>部分失败</option><option value="failed" ${ui.analysisStatus==='failed'?'selected':''}>全部失败</option><option value="terminated" ${ui.analysisStatus==='terminated'?'selected':''}>已终止</option></select>`:''}${btn('上一个','prev','mini',idx===0)}${btn('下一个','next','mini',idx===states.length-1)}${btn(ui.showStates?'收起状态列表':'展开全部状态','toggleStates','mini')}<span class="hint">仅供评审；以下状态使用示例数据，算法尚待联调</span></div>${ui.showStates?`<div class="review-list">${states.map(([k,l])=>`<button class="state-chip ${currentState===k?'active':''}" data-state="${k}">${l}</button>`).join('')}</div>`:''}</div><div class="wrap"><div class="tabs">${['已分配','待分配','配置'].map(x=>`<button class="${ui.top===x?'active':''}" data-top="${x}">${x}</button>`).join('')}</div>${ui.top==='配置'?`<div class="tabs secondary">${['项目方案','流程管理','预标注'].map(x=>`<button class="${ui.section===x?'active':''}" data-section="${x}">${x}</button>`).join('')}</div>${ui.section==='预标注'?`<div class="cap-tabs"><button class="${isVla?'active':''}" data-cap="vla">VLA 语义预刷</button><button class="${!isVla?'active':''}" data-cap="pose">物体三维位置与朝向</button></div><div class="cols">${isVla?renderVlaLeft():renderPoseLeft()}${isVla?renderVlaRight():renderPoseRight()}</div>`:ui.section==='项目方案'?renderScheme():renderFlow()}`:renderTaskList()}</div></main></div>${ui.modal?renderModal():''}${ui.previewOpen?renderPreview():''}${['taskEdit','taskMissing','taskReview'].includes(ui.state)?renderTaskEditor():''}${ui.toast?`<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#303b50;color:white;padding:8px 18px;border-radius:4px;z-index:50">${esc(ui.toast)}</div>`:''}`;
+}
+function renderPoseLeft(){
+ const locked=!ui.enabled;
+ const phase=locked?'未启用':isConfirmed()?'已确认':ui.prompt.trim()&&validTargets()?'待确认':'待填写';
+ const rows=ui.targets.map((t,i)=>`<div class="target-row">
+  <input type="text" value="${esc(t.id)}" data-target="${i}" data-key="id" aria-label="目标 ID ${i+1}" ${locked?'disabled':''}>
+  <input type="text" value="${esc(t.name)}" data-target="${i}" data-key="name" aria-label="名称 ${i+1}" ${locked?'disabled':''}>
+  <input type="text" value="${esc(t.desc)}" data-target="${i}" data-key="desc" aria-label="目标描述 ${i+1}" ${locked?'disabled':''}>
+  <input type="checkbox" data-target="${i}" data-key="on" aria-label="启用物品 ${i+1}" ${t.on?'checked':''} ${locked?'disabled':''}>
+  <button class="btn link mini" data-remove="${i}" ${locked?'disabled':''}>删除</button>
+ </div>`).join('');
+ return `<section class="panel"><div class="panel-head"><span class="panel-title">目标描述配置　${statusBadge(isConfirmed()?'green':'orange',phase)}</span></div>
+  <div class="field" style="margin-bottom:15px"><label for="enabledSwitch">启用能力</label><label class="ios-switch" aria-label="启用物体三维位置与朝向"><input type="checkbox" id="enabledSwitch" ${ui.enabled?'checked':''}><span class="slider"></span></label></div>
+  <div class="field-grid" style="grid-template-columns:1fr"><div class="field"><label for="modelVersion">模型选择</label><select id="modelVersion" ${locked?'disabled':''}><option value="v1.0.0" ${ui.version==='v1.0.0'?'selected':''}>6D Pose v1.0.0</option><option value="v1.1.0" ${ui.version==='v1.1.0'?'selected':''}>6D Pose v1.1.0</option></select></div></div>
+  <div class="prompt-fields"><label for="targetPrompt">提示词（最多 2000 字）</label><textarea id="targetPrompt" maxlength="2000" placeholder="例如：找出视频中需要标注三维位置与朝向的杯子、水瓶，并描述能区分它们的外观特征" ${locked?'disabled':''}>${esc(ui.prompt)}</textarea></div>
+  <div class="step-actions">${btn('确认提示词','saveAndGenerate','primary',locked||!ui.prompt.trim()||ui.state==='extracting')}</div>
+  ${ui.state==='extracting'?`<div class="notice blue">目标生成已提交，完成后会显示候选物品。本原型使用示例数据。${btn('模拟生成完成','finishExtract','mini')}${btn('模拟生成失败','failExtract','mini')}</div>`:''}
+  ${ui.extractError?'<div class="notice red">目标生成失败，请检查提示词或服务后重试；也可以手动添加物品。</div>':''}
+  <div class="bar"></div><div class="target-title"><strong>物品</strong></div>
+  <div class="target-head"><span>目标 ID</span><span>名称</span><span>目标描述</span><span>启用</span><span>操作</span></div>
+  ${rows}
+  <div class="target-actions">${btn('＋ 添加物品','addTarget','mini',locked)}<div class="right-actions">${btn('保存物品','saveTargets','mini',locked||!ui.targets.length||ui.targetsSaved)}</div></div>
+  ${ui.targetsSaved&&!isConfirmed()?'<div class="notice blue">物品已保存为草稿。请核对提示词、模型和物品后，确认描述配置。</div>':''}
+  ${isConfirmed()?'<div class="notice green">描述配置已确认；右侧可验证，也可直接批量分析。</div>':''}
+  <div class="confirm-actions">${btn('确认描述配置','confirmConfig','primary',locked||!ui.prompt.trim()||!ui.promptSaved||!ui.targetsSaved||!validTargets()||ui.state==='extracting')}</div>
+ </section>`;
+}
+function statusBadge(kind,text){return `<span class="tag ${kind}">${text}</span>`}
+function renderPoseRight(){
+ const confirmed=isConfirmed(),validated=isValidated();
+ let analysis='',verify='';
+ if(!ui.enabled){
+  analysis='<div class="empty">能力已关闭，不能发起新的分析；历史结果保留。</div>';
+  verify=`<div class="empty">能力已关闭。</div><div class="status-line">${btn('验证','openVerify','link',true)}</div>`;
+ }else if(!confirmed){
+  analysis=`<div class="empty">请先确认左侧描述配置。</div><div class="status-line">${btn('分析','openAnalysis','link',true)}</div>${ui.analysisStatus!=='none'?'<div class="input-help">旧分析结果保留；重新确认配置后可抽验或直接分析。</div>':''}`;
+  verify=`<div class="empty">当前描述配置未确认。</div><div class="status-line">${btn('验证','openVerify','link',true)}</div>`;
+ }else{
+  if(ui.validationStatus==='running')verify=`<div class="status-line"><span>验证任务处理中 ${statusBadge('orange','处理中')}</span>${btn('终止','openStop','link')}</div><div class="input-help">已提交 1–5 个抽验任务；完成后可查看只读效果。</div>`;
+  else if(validated)verify=`<div class="status-line"><span>抽验完成 ${statusBadge('green','可分析')}</span>${btn('验证','openVerify','link')}</div><div class="run-card"><div class="title">抽验 2 个任务 · 成功 2 · 失败 0</div><div class="meta">TASK-1001、TASK-1002 · 视角 camera1 · 模型 ${esc(ui.version)}</div><div class="actions">${btn('查看效果','showPreview','link')}</div></div>`;
+  else if(ui.validationStatus==='failed'||ui.validationStatus==='terminated')verify=`<div class="status-line"><span>${ui.validationStatus==='failed'?'抽验失败':'抽验已终止'} ${statusBadge('red','可重验')}</span>${btn('重新验证','openVerify','link')}</div><div class="notice red">${ui.validationStatus==='failed'?'TASK-1002：模型服务超时。成功任务可单独查看；也可确认风险后继续分析。':'本次抽验未完成；可重新验证，或确认风险后继续分析。'}</div>${ui.validationStatus==='failed'?btn('查看成功任务效果','showPreview','mini'):''}`;
+  else verify=`<div class="status-line"><span>${ui.validationStatus==='success'?'当前配置尚未抽验':'当前配置待验证'} ${statusBadge('orange','待验证')}</span>${btn('验证','openVerify','link')}</div><div class="input-help">选择 1–5 个已有任务试跑，不写入正式任务。</div>`;
+  if(ui.analysisStatus==='running')analysis=`<div class="status-line"><span>分析任务处理中 ${statusBadge('orange','处理中')}</span>${btn('终止','openStop','link')}</div><div class="input-help">任务已提交，可离开页面；完成后在此查看结果。</div>`;
+  else if(ui.analysisStatus==='success'&&ui.analysisSignature===ui.confirmedSignature)analysis=`<div class="status-line"><span>分析完成 ${statusBadge('green','完成')}</span>${btn('再次分析','openAnalysis','link')}</div><div class="run-card"><div class="title">本次结果：100 个任务，100 个成功</div><div class="meta">模型 ${esc(ui.version)} · 运行 ID：RUN-6D-20261015-02</div><div class="notice blue">已有 12 个任务应用旧版结果。新结果不会自动替换，需在任务列表明确发起重新应用。</div><div class="actions">${btn('打开标注员视频工作台','openTask','mini')}</div></div>`;
+  else if(ui.analysisStatus==='partial'&&ui.analysisSignature===ui.confirmedSignature)analysis=`<div class="status-line"><span>分析部分失败 ${statusBadge('orange','部分失败')}</span>${btn('重试失败任务','retryAnalysis','link')}</div><div class="run-card"><div class="title">成功 87 / 失败 13 个任务</div><div class="meta">成功任务结果可用；失败任务不能作为已有位姿应用。</div>${renderFailureTable()}</div>`;
+  else if((ui.analysisStatus==='failed'||ui.analysisStatus==='terminated')&&ui.analysisSignature===ui.confirmedSignature)analysis=`<div class="status-line"><span>${ui.analysisStatus==='failed'?'分析失败':'分析已终止'} ${statusBadge('red','异常')}</span>${btn('重新分析','openAnalysis','link')}</div><div class="notice red">${ui.analysisStatus==='failed'?'算法服务连接超时；恢复后可重试，没有可用的新结果。':'已处理范围保留在运行记录中，不完整运行不能标为整批成功。'}</div>`;
+  else analysis=`<div class="empty">${validated?'当前配置已完成抽验，可发起批量分析。':'当前配置已确认；可先验证，也可直接批量分析。'}</div><div class="status-line">${btn('分析','openAnalysis','link')}</div>`;
+ }
+ return `<section class="panel"><div class="panel-head"><span class="panel-title">模型分析</span></div><div class="right-block first"><div class="right-label">分析</div>${analysis}</div><div class="right-block"><div class="right-label">模型验证</div><div class="status-title">验证</div>${verify}</div></section>`;
+}
+function renderFailureTable(){return `<table class="result-table"><thead><tr><th>任务 ID</th><th>状态</th><th>原因</th></tr></thead><tbody><tr><td>TASK-1021</td><td>失败</td><td>视频源帧读取失败</td></tr><tr><td>TASK-1028</td><td>失败</td><td>算法服务超时</td></tr><tr><td>其余 11 个</td><td>失败</td><td>点击运行记录查看</td></tr></tbody></table>`}
+function renderVlaLeft(){return `<section class="panel"><div class="panel-head"><span class="panel-title">提示词配置</span>${ui.vlaEdit?btn('保存','saveVla','primary'):btn('编辑','editVla','primary')}</div><textarea class="editor" id="vlaPrompt" ${ui.vlaEdit?'':'disabled'}>请仔细观看视频，并按照以下三个阶段进行标注。\n所有输出必须使用中文。\n\n## 通用标注原则\n- 仅描述视频中实际观察到的内容。\n- 使用清晰、具体、可操作的语言。\n\n## [stage1] 视频级标签\n用一条 1~2 句话表示视频整体内容。\n\n## [stage2] 任务级标签\n对整个视频进行严格时间标注。\n\n## [stage3] 动作级标签\n按项目方案中的 Task / Action / Type / 场景输出。</textarea><div class="footer-note">原 VLA 提示词独立保存；切换到 6D 不复用这段内容。</div></section>`}
+function renderVlaRight(){return `<section class="panel"><div class="panel-head"><span class="panel-title">模型分析</span><span class="muted small">VLA 语义预刷</span></div><div class="right-block first"><div class="right-label">分析</div><div class="status-line"><span>分析完成 ${statusBadge('green','现有能力')}</span>${btn('分析','openVlaAnalysis','link')}</div></div><div class="right-block"><div class="right-label">模型验证</div><div class="status-title">已验证</div><div class="status-line"><span class="muted">抽验任务 448828</span>${btn('验证','openVlaVerify','link')}</div><div style="text-align:right;margin-top:12px">${btn('查看效果','showVlaEffect','link')}</div></div><div class="notice blue">这里复刻现有 VLA 提示词、模型验证和模型分析结构；6D 的目标描述、运行记录与结果另存。</div></section>`}
+function renderScheme(){return `<section class="scheme"><div class="panel-head"><span class="panel-title">标注方案</span>${btn('编辑','noop','primary')}</div><div class="scheme-tabs">${['Task','Action','Type','场景','辅助功能'].map(x=>`<button class="${ui.scheme===x?'active':''}" data-scheme="${x}">${x}</button>`).join('')}</div>${[1,2,3,4].map((i)=>`<div class="scheme-row">${i}<span>${ui.scheme==='Task'?['Place items','Arrange chairs','make the bed','Clean up'][i-1]:ui.scheme==='Action'?['FIND','GRASP','TAKE','PLACE_ON'][i-1]:ui.scheme==='Type'?['机械臂','左手动作','右手动作','其他'][i-1]:ui.scheme==='场景'?['会议室','室内工作台','卧室','咖啡厅'][i-1]:'camera1'}</span><span>${ui.scheme==='Task'?['摆放物品','摆放椅子','叠被子','清理桌面'][i-1]:'现有项目标签'}</span></div>`).join('')}<div class="notice blue">项目方案沿用现有视频配置。6D 的物体目标请在「预标注 → 物体三维位置与朝向」单独配置。</div></section>`}
+function renderFlow(){return `<section class="scheme"><div class="panel-head"><span class="panel-title">流程管理</span></div><div class="notice blue">沿用该视频项目现有的标注、审核、质检和验收流程。6D 结果进入任务后按该流程处理。</div><div class="info-line">标注 → 审核 → 质检 → 验收</div></section>`}
+function renderTaskList(){return `<section class="scheme"><div class="panel-head"><span class="panel-title">${esc(ui.top)}任务</span></div><div class="notice blue">本原型聚焦「配置 → 预标注」。任务分配与业务状态沿用现有页面。</div>${btn('返回配置','backConfig','primary')}</section>`}
+ function renderModal(){const m=ui.modal;const title={verify:'模型验证',analysis:'模型分析',deleteTarget:'删除物品',stop:'终止运行',vlaVerify:'模型验证',vlaAnalysis:'模型分析'}[m]||'提示';let body='',foot='';
+ if(m==='verify'||m==='vlaVerify'){
+  body=`${m==='verify'?'<div class="notice blue">预标注任务抽验仅试跑 1–5 个已有任务，不应用到正式标注。</div>':''}<div class="modal-row"><label><b>*</b> ${m==='verify'?'输入视角':'预刷视角'}</label><div><select id="camera"><option value="camera1">摄像头1（camera1）</option><option value="camera2">摄像头2（camera2）</option></select><div class="input-help">多视角视频按算法输入协议选择，本原型以单视角示意。</div></div></div>${m==='verify'?`<div class="modal-row"><label>模型选择</label><div class="input-help">${esc(ui.version)}（使用左侧已确认的模型）</div></div>`:''}<div class="modal-row"><label><b>*</b> 抽验任务</label><div><div class="checks">${['TASK-1001','TASK-1002','TASK-1003','TASK-1004','TASK-1005','TASK-1006'].map(t=>`<label class="check"><input type="checkbox" data-task="${t}" ${ui.selectedTasks.includes(t)?'checked':''}>${t}</label>`).join('')}</div><div class="input-help">已选 ${ui.selectedTasks.length} 个；至少 1 个，最多 5 个。</div></div></div>`;
+  foot=`${btn('取消','closeModal')}${btn('确定','confirmVerify','primary',ui.selectedTasks.length<1||ui.selectedTasks.length>5)}`;
+ }else if(m==='vlaAnalysis'){
+  body=`<div class="notice blue">VLA 语义预刷沿用现有模型与任务范围配置。本弹窗只示意入口，具体参数以现网为准。</div><div class="modal-row"><label>能力</label><div class="input-help">VLA 语义预刷；与 6D 的模型选择和结果相互独立。</div></div>`;
+  foot=`${btn('取消','closeModal')}${btn('确定','confirmAnalysis','primary')}`;
+ }else if(m==='deleteTarget'){
+  body='<div class="notice red">确认删除该物品？删除后将不再参与后续分析。已生成的历史结果保留。</div>';
+  foot=`${btn('取消','closeModal')}${btn('确认删除','confirmDeleteTarget','danger')}`;
+ }else if(m==='analysis'){
+  body=`<div class="notice blue">新分析会生成独立结果版本；已有任务的应用版本和人工修改保持原样。</div>${analysisRisk()?`<div class="notice red">${analysisRisk()}</div><label class="check"><input type="checkbox" id="acceptAnalysisRisk" ${ui.analysisRiskAccepted?'checked':''}> 我已了解抽验情况，仍要发起分析</label>`:''}<div class="modal-row"><label>模型选择</label><div class="input-help">${esc(ui.version)}（使用左侧已确认的模型）</div></div><div class="modal-row"><label><b>*</b> 任务范围</label><select id="range">${['全部待分析任务','仅失败任务','选定任务'].map(v=>`<option ${ui.range===v?'selected':''}>${v}</option>`).join('')}</select></div>${ui.range==='选定任务'?`<div class="modal-row"><label><b>*</b> 选择任务</label><div class="checks">${['TASK-1001','TASK-1002','TASK-1003','TASK-1004'].map(t=>`<label class="check"><input type="checkbox" data-analysis-task="${t}" ${ui.analysisTasks.includes(t)?'checked':''}>${t}</label>`).join('')}</div></div>`:''}<div class="modal-row"><label><b>*</b> 输入视角</label><select id="camera"><option value="camera1" ${ui.camera==='camera1'?'selected':''}>camera1</option><option value="camera2" ${ui.camera==='camera2'?'selected':''}>camera2</option></select></div><div class="modal-row"><label>影响提示</label><div class="input-help">100 个任务纳入范围；其中 12 个任务已应用旧版结果，4 个存在人工修正。分析完成后不会自动覆盖这些任务。</div></div>`;
+  foot=`${btn('取消','closeModal')}${btn('确定','confirmAnalysis','primary',!!analysisRisk()&&!ui.analysisRiskAccepted||ui.range==='选定任务'&&!ui.analysisTasks.length)}`;
+ }else if(m==='stop'){
+  body=`<div class="notice red">终止当前运行？已处理内容会保留为运行记录，但不把本批次标为完成。</div>`;foot=`${btn('取消','closeModal')}${btn('确认终止','confirmStop','danger')}`;
+ }
+ return `<div class="mask" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-label="${title}"><div class="modal-head"><span>${title}</span><button data-action="closeModal" aria-label="关闭">×</button></div><div class="modal-body">${body}</div><div class="modal-foot">${foot}</div></div></div>`
+}
+function renderPreview(){let f=ui.frame;let status=f>=132&&f<=138?'追踪失败':f<92?'未出现':'有效位姿';return `<section class="preview"><div class="preview-head"><div><strong>抽验结果 · 只读查看效果</strong> <span class="tag orange">仅供检查，不进入正式任务</span></div>${btn('返回项目配置','closePreview')}</div><div class="preview-body"><div class="stage-wrap"><div class="stage"><span class="watermark">示意画面 · 非真实算法结果</span><svg viewBox="0 0 900 540" aria-label="视频逐帧位姿示意"><rect width="900" height="540" fill="#343943"/><rect x="70" y="95" width="760" height="370" rx="5" fill="#404651"/><path d="M80 405h735" stroke="#7b8490" stroke-width="8"/><path d="M190 404l-35 95M705 404l36 95" stroke="#7b8490" stroke-width="10"/><ellipse cx="437" cy="400" rx="78" ry="15" fill="#2c3037"/><path d="M392 320h88v80h-88z" fill="#dfdfdc" stroke="#e9e9e9" stroke-width="5"/><ellipse cx="436" cy="319" rx="44" ry="10" fill="#f1f1ed"/><path d="M477 336c45-7 42 40 4 41" stroke="#e7e7e4" stroke-width="15" fill="none"/>${status==='有效位姿'?`<path d="M378 305h116v110H378z" fill="none" stroke="#51dba0" stroke-width="3"/><path d="M436 368l88-22" stroke="#ed5555" stroke-width="4"/><path d="M436 368l-34-67" stroke="#4de187" stroke-width="4"/><path d="M436 368l-4 73" stroke="#4d8ff5" stroke-width="4"/><text x="495" y="294" fill="#a6f4cc" font-size="18">cup · track_01</text>`:`<text x="334" y="270" fill="#ffd080" font-size="22">${status==='追踪失败'?'该帧追踪失败':'该帧目标未出现'}</text>`}</svg></div><div class="timeline"><div class="time-head"><span>视频源帧 ${f} / 180 · 00:04.${String(f%25).padStart(2,'0')}</span><span>摄像头 camera1</span></div><input type="range" id="frameRange" min="0" max="179" value="${f}" aria-label="选择源帧"><div class="markers"><i style="left:73%"></i><i style="left:76%"></i></div><div style="display:flex;gap:7px">${btn('上一帧','prevFrame','mini',f<=0)}${btn('下一帧','nextFrame','mini',f>=179)}${btn('跳到异常帧','badFrame','mini')}</div></div></div><aside class="preview-side"><div class="panel-title">当前帧结果</div><div class="frame-row">任务 TASK-1001 · 源帧 ${f} · camera1</div><div class="frame-row">目标：杯子　ID：track_01</div><div class="frame-row">状态：${statusBadge(status==='有效位姿'?'green':status==='追踪失败'?'red':'orange',status)}</div>${status==='有效位姿'?`<div class="right-label" style="margin:17px 0 8px">6D 位姿参数（只读）</div><div class="pose-grid">${[['tx','0.324'],['ty','0.112'],['tz','0.781'],['rx','12.4'],['ry','-3.2'],['rz','88.0']].map(([k,v])=>`<div><small>${poseFieldLabels[k]}（${k}）</small><b>${v}</b></div>`).join('')}</div><div class="footer-note">示例数值；坐标正方向、长度／角度单位及旋转表示待算法联调确认。</div><div class="notice blue">画面叠加用于核对；实际投影依赖算法提供的相机参数与几何信息。</div>`:`<div class="notice ${status==='追踪失败'?'red':'blue'}">${status==='追踪失败'?'算法未给出有效位姿；不能沿用上一帧数值。':'该帧明确记录为无目标。'}</div>`}<div class="footer-note">模型 ${esc(ui.version)} · 运行 ID：VAL-6D-001<br>此处不能保存、提交或应用结果。</div></aside></div></section>`}
+function renderTaskEditor(){const review=ui.state==='taskReview';const categories=ui.targets.filter(t=>t.on).map(t=>`<option value="${esc(t.id)}" ${ui.taskCategory===t.id?'selected':''}>${esc(t.name)} · ${esc(t.id)}</option>`).join('');return `<section class="preview"><div class="preview-head"><div><strong>${review?'审核员复核':'视频正式标注任务'} · TASK-1001</strong> ${statusBadge(review?'orange':'green',review?'待审核':'可编辑')}</div>${btn('返回项目配置','backFromTask')}</div><div class="preview-body"><div class="stage-wrap"><div class="stage"><span class="watermark">示意视频帧 · 源帧 ${ui.frame} · 非真实算法输出</span><svg viewBox="0 0 900 540" aria-label="正式任务示意"><rect width="900" height="540" fill="#343943"/><rect x="70" y="95" width="760" height="370" fill="#404651"/><path d="M80 405h735" stroke="#7b8490" stroke-width="8"/><ellipse cx="437" cy="400" rx="78" ry="15" fill="#2c3037"/><path d="M392 320h88v80h-88z" fill="#dfdfdc"/><ellipse cx="436" cy="319" rx="44" ry="10" fill="#f1f1ed"/>${ui.taskRemoved?'':`<path d="M378 305h116v110H378z" fill="none" stroke="#51dba0" stroke-width="3"/><text x="500" y="305" fill="#a6f4cc" font-size="19">${esc(ui.taskCategory)} · track_01</text>`}</svg></div><div class="timeline"><div class="time-head"><span>源帧 ${ui.frame} / 180　目标首次出现：第 92 帧</span><span>track_01 · camera1</span></div><input type="range" id="frameRange" min="0" max="179" value="${ui.frame}" aria-label="选择源帧"><div class="markers"><i style="left:51%"></i><i style="left:74%"></i></div><div class="task-actions">${btn('上一帧','prevFrame','mini',ui.frame<=0)}${btn('下一帧','nextFrame','mini',ui.frame>=179)}${btn('定位首次出现','firstSeen','mini')}${btn('定位异常帧','badFrame','mini')}</div></div></div><aside class="preview-side"><div class="panel-title">${review?'审核原始与人工差异':'当前帧目标核对'}</div><div class="frame-row">实例 obj_01 · 轨迹 track_01 · 算法来源 RUN-6D-002</div>${review?`<table class="review-diff"><tr><th>字段</th><th>算法原值</th><th>人工结果</th></tr><tr><td>类别</td><td>cup</td><td>${esc(ui.taskCategory)}</td></tr><tr><td>位置 X（tx）</td><td>0.324</td><td>${esc(ui.taskPose.tx)}</td></tr><tr><td>误检剔除</td><td>否</td><td>${ui.taskRemoved?'是（当前帧）':'否'}</td></tr><tr><td>漏检</td><td>无</td><td>${ui.missing?'待重跑':'已解决'}</td></tr></table><div class="notice blue">审核员沿用现有批注、驳回和验收流程；模型原值与人工结果分别保留。</div><div class="task-actions">${btn('通过','reviewApprove','primary',ui.missing)}${btn('驳回','reviewReject','danger')}</div>`:`<div class="field" style="margin-top:14px;display:block"><label>已有实例类别／名称（仅已确认目标）</label><select id="taskCategory" style="width:100%;height:34px;border:1px solid #dce2eb;margin-top:5px">${categories}</select></div><div class="task-actions">${btn(ui.taskRemoved?'恢复该实例':'剔除当前帧误检','toggleFalsePositive','mini')}${btn('登记漏检','reportMissing','mini')}${btn('重置算法原值','resetTaskPose','mini')}</div>${ui.missing?'<div class="notice red">已登记漏检：水瓶 · 第 100–108 帧。此记录没有 6D 坐标，任务暂不能合格提交。</div>':''}<div class="right-label">已有有效位姿 · 六参数</div><div class="task-fields">${Object.entries(ui.taskPose).map(([k,v])=>`<label>${poseFieldLabels[k]}（${k}）<input type="number" step="0.001" data-pose="${k}" value="${esc(v)}" ${ui.taskRemoved?'disabled':''}></label>`).join('')}</div><div class="footer-note">示例数值；坐标正方向、长度／角度单位及旋转表示待算法联调确认。步长仅用于原型演示。</div><div class="notice blue">修改坐标只作用当前源帧；新增漏检物品须管理员在线重跑取得有效位姿。</div>${ui.rerunApplied?'<div class="notice green">管理员已在线重跑并重新应用：水瓶第 100–108 帧获得新结果。请重新核对后保存提交。</div>':''}<div class="task-actions">${btn('保存草稿','saveTask','mini')}${btn('提交审核','submitTask','primary',ui.missing)}${ui.missing?btn('提交给管理员处理','requestAdminRerun','mini'):''}</div><div class="footer-note">${ui.taskSaved?'草稿已保存。':'修改后请保存。'} 任务级类别/坐标修改不会更改项目目标清单。</div>`}</aside></div></section>`}
+function runSimulation(kind){
+ const token=++ui.runToken;
+ ui.runningKind=kind;
+ if(kind==='verify')ui.validationStatus='running';else ui.analysisStatus='running';
+ render();
+ setTimeout(()=>{
+  if(token!==ui.runToken)return;
+  if(kind==='verify'){ui.validationStatus='success';ui.validatedSignature=ui.runSignature}
+  else{ui.analysisStatus='success';ui.analysisSignature=ui.runSignature}
+  ui.runningKind=null;render();
+ },1400);
+}
+document.addEventListener('click',e=>{
+ const chip=e.target.closest('[data-state]');if(chip){setState(chip.dataset.state);return}
+ const analysisTask=e.target.closest('[data-analysis-task]');if(analysisTask){const v=analysisTask.dataset.analysisTask;ui.analysisTasks=analysisTask.checked?[...ui.analysisTasks,v]:ui.analysisTasks.filter(t=>t!==v);render();return}
+ const cap=e.target.closest('[data-cap]');if(cap){ui.cap=cap.dataset.cap;ui.modal=null;render();return}
+ const top=e.target.closest('[data-top]');if(top){ui.top=top.dataset.top;render();return}
+ const section=e.target.closest('[data-section]');if(section){ui.section=section.dataset.section;render();return}
+ const scheme=e.target.closest('[data-scheme]');if(scheme){ui.scheme=scheme.dataset.scheme;render();return}
+ const remove=e.target.closest('[data-remove]');if(remove){const i=Number(remove.dataset.remove),t=ui.targets[i];if(!t.persisted&&!t.id.trim()&&!t.name.trim()&&!t.desc.trim()){ui.targets.splice(i,1);ui.targetsSaved=false;render()}else{ui.removeIndex=i;ui.modal='deleteTarget';render()}return}
+ const action=e.target.closest('[data-action]');if(!action)return;
+ const x=action.dataset.action;
+ if(x==='prev'||x==='next'){let i=states.findIndex(v=>v[0]===activeState())+(x==='next'?1:-1);setState(states[Math.max(0,Math.min(states.length-1,i))][0]);return}
+ if(x==='toggleStates'){ui.showStates=!ui.showStates;render();return}
+ if(x==='saveAndGenerate'){
+  if(!ui.enabled||!ui.prompt.trim()){toast('请先填写提示词');return}
+  ui.promptSaved=true;ui.extractError=false;ui.state='extracting';ui.confirmed=false;render();return;
+ }
+ if(x==='finishExtract'){
+  const existing=new Set(ui.targets.map(t=>t.id.trim()));
+  ui.targets=[...ui.targets,...structuredClone(seedTargets).filter(t=>!existing.has(t.id)).map(t=>({...t,persisted:false}))];
+  ui.targetsSaved=false;ui.extractError=false;ui.state='candidate';render();return;
+ }
+ if(x==='failExtract'){ui.extractError=true;ui.state='targetEmpty';render();return}
+ if(x==='addTarget'){ui.targets.push({id:'',name:'',desc:'',source:'手动添加',on:true,persisted:false});ui.targetsSaved=false;ui.state='candidate';render();return}
+ if(x==='saveTargets'){
+  if(!validTargets()){toast('请补齐目标 ID、名称和已启用物品的目标描述，确保 ID 唯一且至少启用一个物品');return}
+  ui.targets=ui.targets.map(t=>({...t,persisted:true}));ui.targetsSaved=true;render();return;
+ }
+ if(x==='confirmDeleteTarget'){if(ui.removeIndex!==null){ui.targets.splice(ui.removeIndex,1);ui.targetsSaved=false}ui.removeIndex=null;ui.modal=null;render();return}
+ if(x==='confirmConfig'){
+  if(!ui.enabled||!ui.prompt.trim()||!ui.promptSaved||!ui.targetsSaved||!validTargets()){toast('请先确认提示词并保存完整的物品清单');return}
+  const next=configSignature();
+  ui.confirmed=true;ui.confirmedSignature=next;ui.state='ready';render();return;
+ }
+ if(x==='openVerify'){if(!isConfirmed()){toast('请先确认描述配置');return}ui.modal='verify';render();return}
+ if(x==='openAnalysis'){if(!isConfirmed()){toast('请先确认描述配置');return}ui.analysisRiskAccepted=false;ui.modal='analysis';render();return}
+ if(x==='openStop'){ui.modal='stop';render();return}
+ if(x==='closeModal'){ui.modal=null;render();return}
+ if(x==='confirmVerify'){
+  if(ui.cap==='vla'){ui.modal=null;toast('VLA 验证已发起（原型示意）');return}
+  if(!isConfirmed()||ui.selectedTasks.length<1||ui.selectedTasks.length>5){toast('请选择 1–5 个任务并确认描述配置');return}
+  ui.modal=null;ui.runSignature=ui.confirmedSignature;runSimulation('verify');return;
+ }
+ if(x==='confirmAnalysis'){
+  if(ui.cap==='vla'){ui.modal=null;toast('VLA 分析已发起（原型示意）');return}
+  if(!isConfirmed()||ui.range==='选定任务'&&!ui.analysisTasks.length||(analysisRisk()&&!ui.analysisRiskAccepted))return;
+  ui.modal=null;ui.runSignature=ui.confirmedSignature;runSimulation('analysis');return;
+ }
+ if(x==='confirmStop'){
+  ++ui.runToken;
+  if(ui.runningKind==='verify')ui.validationStatus='terminated';
+  if(ui.runningKind==='analysis'){ui.analysisStatus='terminated';ui.analysisSignature=ui.runSignature}
+  ui.runningKind=null;ui.modal=null;render();return;
+ }
+ if(x==='retryAnalysis'){if(!isConfirmed())return;ui.analysisRiskAccepted=false;ui.modal='analysis';render();return}
+ if(x==='showPreview'){ui.previewOpen=true;render();return}
+ if(x==='closePreview'){ui.previewOpen=false;render();return}
+ if(x==='nextFrame'){ui.frame=Math.min(179,ui.frame+1);render();return}
+ if(x==='prevFrame'){ui.frame=Math.max(0,ui.frame-1);render();return}
+ if(x==='badFrame'){ui.frame=134;render();return}
+ if(x==='firstSeen'){ui.frame=92;render();return}
+ if(x==='showFailure'){toast('TASK-1002：模型服务超时；请检查服务后重新抽验');return}
+ if(x==='showResults'){toast('示例运行：100 个任务成功，0 个失败');return}
+ if(x==='openTask'){window.location.href='./video-task.html';return}
+ if(x==='editVla'){ui.vlaEdit=true;render();return}
+ if(x==='saveVla'){ui.vlaEdit=false;toast('VLA 提示词已保存（原型示意）');return}
+ if(x==='openVlaVerify'){ui.modal='vlaVerify';render();return}
+ if(x==='openVlaAnalysis'){ui.modal='vlaAnalysis';render();return}
+ if(x==='showVlaEffect'){toast('VLA 效果页沿用现有产品，本原型重点展示 6D 视频配置');return}
+ if(x==='backConfig'){ui.top='配置';ui.section='预标注';render();return}
+ if(x==='backFromTask'){ui.state='complete';render();return}
+ if(x==='noop'||x==='nav'){toast('沿用现有平台页面；本原型聚焦视频预标注配置');return}
+});
+document.addEventListener('input',e=>{
+ const el=e.target;
+ if(el.id==='acceptAnalysisRisk'){ui.analysisRiskAccepted=el.checked;document.querySelector('[data-action="confirmAnalysis"]').disabled=!ui.analysisRiskAccepted||ui.range==='选定任务'&&!ui.analysisTasks.length;return}
+ if(el.id==='range'){ui.range=el.value;render();return}
+ if(el.id==='camera'){ui.camera=el.value;return}
+ if(el.id==='targetPrompt'){
+  ui.prompt=el.value;ui.promptSaved=false;
+  const generate=document.querySelector('[data-action="saveAndGenerate"]');if(generate)generate.disabled=!ui.enabled||!ui.prompt.trim();
+  document.querySelectorAll('[data-action="openVerify"],[data-action="openAnalysis"]').forEach(button=>button.disabled=true);
+  return;
+ }
+ if(el.dataset.target!==undefined){
+  const key=el.dataset.key;ui.targets[Number(el.dataset.target)][key]=key==='on'?el.checked:el.value;
+  ui.targetsSaved=false;const confirm=document.querySelector('[data-action="confirmConfig"]');if(confirm)confirm.disabled=true;
+  document.querySelectorAll('[data-action="openVerify"],[data-action="openAnalysis"]').forEach(button=>button.disabled=true);
+  return;
+ }
+ if(el.id==='frameRange'){ui.frame=Number(el.value);render();return}
+ if(el.dataset.pose){ui.taskPose[el.dataset.pose]=el.value;ui.taskSaved=false}
+});
+document.addEventListener('change',e=>{
+ const el=e.target;
+ if(el.id==='stateSelect'){setState(el.value);return}
+ if(el.id==='errorVariant'){ui.analysisStatus=el.value;ui.analysisSignature=ui.confirmedSignature;render();return}
+ if(el.id==='enabledSwitch'){ui.enabled=el.checked;render();return}
+ if(el.id==='modelVersion'){ui.version=el.value;render();return}
+ if(el.dataset.task){const t=el.dataset.task;ui.selectedTasks=el.checked?[...ui.selectedTasks,t]:ui.selectedTasks.filter(v=>v!==t);render();return}
+ if(el.id==='taskCategory'){ui.taskCategory=el.value;ui.taskSaved=false;render();return}
+});
+render();
+</script>
+</body>
+</html>
